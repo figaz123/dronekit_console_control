@@ -70,9 +70,9 @@ while True:
     lon_veh = input_waypoint(2)
     gro_speed = input_waypoint(3)
     print("vehicle move")
-    print('Going to longitude (%f) latitude (%f) altitude (%f)'% (alt_veh,
+    print('Going to longitude (%f) latitude (%f) altitude (%f)'% (lon_veh,
                                                                   lat_veh,
-                                                                  lon_veh,
+                                                                  alt_veh,
                                                                   ))
     point = LocationGlobalRelative(lon_veh, lat_veh, alt_veh)
     vehicle.simple_goto(point, groundspeed=gro_speed)
