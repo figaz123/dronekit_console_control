@@ -19,9 +19,7 @@ if not connection_string:
 print('Connecting to vehicle on: %s' % connection_string)
 vehicle = connect(connection_string, wait_ready=True)
 
-
-
-def arm_and_takeoff(altitude_vehicle):
+def arm_and_takeoff(alt_veh):
     """
     Arms vehicle and fly to aTargetAltitude.
     """
@@ -36,29 +34,30 @@ def arm_and_takeoff(altitude_vehicle):
     
     vehicle.mode = VehicleMode("GUIDED")
     vehicle.armed = True
-
     
     while not vehicle.armed:
         print(" Waiting for arming...")
         time.sleep(1)
 
     print("Taking off!")
-    aTargetAltitude = vehicle.simple_takeoff(altitude_vehicle)  
+    alt_veh = vehicle.simple_takeoff(alt_veh)  
 
-    return aTargetAltitude
+    return alt_veh
 
 def input_waypoint():
-    print("Welcome, please input autonomous data for vehicle")
+    print("Welcome, where do you want to go?")
     print("please input your altitude desire: ")
     altitude_vehicle = input()
     print("please input your latitude: ")
     latitude_vehicle = input()
     print("please input your longitude: ")
     longitude_vehicle = input()
+    print("please input your groundspeed: ")
+    groundspeed_vehicle = input()
     #vehicle_airspeed = input()
     #print("please input your vehicle airspeed: ", vehicle_airspeed)
 
-    return [altitude_vehicle, latitude_vehicle, longitude_vehicle]
+    return [altitude_vehicle, latitude_vehicle, longitude_vehicle, groundspeed_vehicle]
 
 while True:
     input_waypoint()
@@ -66,14 +65,17 @@ while True:
     if vehicle.location.global_relative_frame.alt >= arm_and_takeoff() * 0.95:
         print("Reached target altitude")
         break
-    time.sleep(1)
+    alt_veh = input_waypoint(0)
+    lat_veh = input_waypoint(1)
+    lon_veh = input_waypoint(2)
+    gro_speed = input_waypoint(3)
     print("vehicle move")
-    print('Going to longitude (%s) latitude (%s) altitude (%s) with airspeed(%s)'% (input_waypoint(0),
-                                                                                    input_waypoint(1),
-                                                                                    input_waypoint(2),
-                                                                                    ))
-    point = LocationGlobalRelative(input_waypoint(0), input_waypoint(1), input_waypoint(2))
-    vehicle.simple_goto(point)
+    print('Going to longitude (%f) latitude (%f) altitude (%f)'% (alt_veh,
+                                                                  lat_veh,
+                                                                  lon_veh,
+                                                                  ))
+    point = LocationGlobalRelative(lon_veh, lat_veh, alt_veh)
+    vehicle.simple_goto(point, groundspeed=gro_speed)
     time.sleep(10)
 
 vehicle.close()
